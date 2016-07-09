@@ -1,5 +1,86 @@
+Enum Confirmation
+{
+	Undefined = -1
+	Yes
+	YesToAll
+	No
+	NoToAll
+}
+
 #list of git repos
 $GitRepos = Get-Content .\GitRepos.txt -Encoding UTF8
+
+#some globals for preferences
+$UpdateGitReposPreferences = @{
+	CommitChoice = [Confirmation]"Undefined"
+	CommitChoice = [Confirmation]"Undefined"
+}
+
+#ask for commit
+#ask to add . ?
+#if no, ask for spec to add
+#if yes, add
+#
+
+function Get-YesNoResponse {
+	#[Y] Yes [A] Yes to all  [N] No  [L] No to all [S] Suspend [?] Help
+	[CmdletBinding()]
+	Param(
+		[String]$Title = "Prompt",
+		[String]$Message = "Prompt message",
+		[String]$YesText = "Selects 'yes' for this prompt but not for any future instances of this prompt",
+		[String]$YesToAllText = "Selects 'yes' for this prompt and for all future instances of this prompt",
+		[String]$NoText = "Selects 'no' for this prompt but not for any future instances of this prompt",
+		[String]$NoToAllText = "Selects 'no' for this prompt and for all future instances of this prompt"
+	)
+
+	[Confirmation]$Response = (Get-Host).UI.PromptForChoice(
+`		$Title,
+		$Message,
+		[System.Management.Automation.Host.ChoiceDescription[]](
+			(New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", $YesText),
+			(New-Object System.Management.Automation.Host.ChoiceDescription "Yes to &all", $YesToAllText),
+			(New-Object System.Management.Automation.Host.ChoiceDescription "&No", $NoText),
+			(New-Object System.Management.Automation.Host.ChoiceDescription "No to a&ll", $NoToAllText)
+			),
+		0
+	)
+	Return $Response
+
+	#Switch($Response)
+	#{
+		#"Undefined"
+		#{
+			#Write-Output "Something almost definitely went wrong. I got undefined!"
+		#}
+		#"Yes"
+		#{
+			#Write-Output "Yes!"
+		#}
+		#"YesToAll"
+		#{
+			#Write-Output "Yes to all!"
+		#}
+		#"No"
+		#{
+			#Write-Output "Nope!"
+		#}
+		#"NoToAll"
+		#{
+			#Write-Output "No to all!"
+		#}
+	#}
+}
+
+function Edit-GitRepo {
+	[CmdletBinding()]
+	Param(
+		[Parameter(
+			ValueFromPipeline = $True
+			)]
+		$Paths
+	)
+}
 
 function Update-GitRepos {
 	[CmdletBinding()]
@@ -9,16 +90,6 @@ function Update-GitRepos {
 
 	#Try block allows catching a C-c to change back to the orig directory
 	Try {
-		Enum
-		{
-			Undefined = -1
-			Yes,
-			YesToAll,
-			No,
-			NoToAll
-		}
-
-		#[Y] Yes [A] Yes to all  [N] No  [L] No to all [S] Suspend [?] Help
 		#Remember the current location so we can go back to it
 		#When we're done with processing
 		Push-Location
@@ -31,7 +102,7 @@ function Update-GitRepos {
 				Continue
 			}
 
-			Write-Output "PROCESSING ${i}: $Repo"
+			Write-Output "==== PROCESSING ${i}: $Repo ===="
 			Try
 			{
 				Resolve-Path $Repo -ErrorAction Stop > $Null
@@ -52,27 +123,16 @@ function Update-GitRepos {
 				Push-Location -StackName ReposWithUnsavedWork
 				If($Interactive -eq $True)
 				{
-					If(($CommitChoice -ne [Confirmation]"YesToAll") && ($CommitChoice -ne [Confirmation]"NoToAll"))
-					{
-						[Confirmation]$CommitChoice = (Get-Host).UI.PromptForChoice(
-							"Unsaved Work",
-							"There's unsaved work in this repo. Would you like to make a commit?",
-							[System.Managment.Automation.Host.ChoiceDescription[]](
-								(New-Object System.Managment.Automation.Host.ChoiceDescription "&Yes", "Prompts for files to add and a message to commit changes before pushing."),
-								(New-Object System.Managment.Automation.Host.ChoiceDescription "Yes to &all", "Selects 'Yes' for all remaining repositories."),
-								(New-Object System.Managment.Automation.Host.ChoiceDescription "&No", "Continues on to push and pull existing commits."),
-								(New-Object System.Managment.Automation.Host.ChoiceDescription "No to a&ll", "Selects 'No' for all remaining repositories."),
-								),
-							0
-							)
-						Switch($CommitChoice)
-						{
-							"Yes"
-							{
+					#If(($CommitChoice -ne [Confirmation]"YesToAll") && ($CommitChoice -ne [Confirmation]"NoToAll"))
+					#{
+						#Switch($CommitChoice)
+						#{
+							#"Yes"
+							#{
 
-							}
-						}
-					}
+							#}
+						#}
+					#}
 				}
 			}
 
