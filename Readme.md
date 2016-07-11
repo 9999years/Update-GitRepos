@@ -58,6 +58,8 @@ Program flow in interactive mode:
                          +-------------------------------+
 ```
 
+(You can render this graph with `make`, provided you have [Graph-Easy](http://search.cpan.org/~tels/Graph-Easy/lib/Graph/Easy.pm) installed.)
+
 Output from a session in interactive mode with one repository (this one) can look like this:
 
 ```
@@ -97,4 +99,11 @@ To https://github.com/9999years/Update-GitRepos.git
    96590ea..9a6a125  master -> master
 ```
 
-You can render this graph with `make`, provided you have [Graph-Easy](http://search.cpan.org/~tels/Graph-Easy/lib/Graph/Easy.pm) installed.
+##Features that might be coming soon:
+
+* The ability to “drop out” into another PowerShell instance to run arbitrary commands in any repository when it’s being processed.
+* Refinement.
+
+##Pull request policy
+
+Please send me pull requests.

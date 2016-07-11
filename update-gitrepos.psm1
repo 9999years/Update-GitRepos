@@ -122,6 +122,8 @@ function Confirm-CommitChoice {
 		$Path
 	)
 
+	git diff
+
 	If( ($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"YesToAll") -and
 		($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"NoToAll") )
 	{
