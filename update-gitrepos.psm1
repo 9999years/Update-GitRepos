@@ -153,7 +153,8 @@ function Update-GitRepos {
 	[CmdletBinding()]
 	Param(
 		[Switch]$Interactive,
-		[Switch]$ResetPreferences
+		[Switch]$ResetPreferences,
+		[Switch]$Local
 	)
 
 	#Try block allows catching a C-c to change back to the orig directory
@@ -204,8 +205,11 @@ function Update-GitRepos {
 			}
 
 			git status --short
-			git pull
-			git push
+			If(!$Local)
+			{
+				git pull
+				git push
+			}
 			$i++
 		}
 	}
