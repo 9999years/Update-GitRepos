@@ -127,7 +127,11 @@ function Confirm-CommitChoice {
 		$Path
 	)
 
+	Write-Output "git diff:"
 	git diff
+
+	Write-Output "git diff --staged:"
+	git diff --staged
 
 	If( ($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"YesToAll") -and
 		($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"NoToAll") )
@@ -195,6 +199,7 @@ function Update-GitRepos {
 			}
 
 			$Status = git status --short
+			git status --short
 			If($Status -ne $Null)
 			{
 				Push-Location -StackName ReposWithUnsavedWork
@@ -204,7 +209,6 @@ function Update-GitRepos {
 				}
 			}
 
-			git status --short
 			If(!$Local)
 			{
 				git pull
