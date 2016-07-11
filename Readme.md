@@ -4,6 +4,8 @@
 
 New feature: As far as I know, this script now does what it says it does!
 
+To use, just add `Import-Module ..\path\to\this\repo` to your `$Profile`.
+
 In its simplest form, it iterates through the paths you provide in `GitRepos.txt` and runs `git status --short`, `git pull`, and `git push` on each.
 
 Additionally, an `-Interactive` flag lets you make simple commits.
