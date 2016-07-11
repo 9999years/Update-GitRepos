@@ -50,10 +50,10 @@ function Confirm-LongOrShortCommit {
 		git commit -m "$CommitMessage"
 	}
 
-	If( ($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"YesToAll") -and
-		($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"NoToAll") )
+	If( ($global:UpdateGitReposPreferences.LongOrShortCommit -ne [Confirmation]"YesToAll") -and
+		($global:UpdateGitReposPreferences.LongOrShortCommit -ne [Confirmation]"NoToAll") )
 	{
-		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse `
+		$global:UpdateGitReposPreferences.LongOrShortCommit = Get-YesNoResponse `
 			-Title "Commit message"`
 			-Message "Would you like to use a long commit (``git commit``)? Answer no to enter a short message for ``git commit -m ...``"`
 			-YesText "Runs ``git commit`` for a long commit message."`
@@ -62,7 +62,7 @@ function Confirm-LongOrShortCommit {
 			-NoToAllText "Selects 'No' for all remaining repositories."
 	}
 
-	Switch($global:UpdateGitReposPreferences.CustomPathSpec)
+	Switch($global:UpdateGitReposPreferences.LongOrShortCommit)
 	{
 		"Undefined" { Write-Error "Uh oh! Something went wrong!" }
 		"Yes" { git commit --verbose }
