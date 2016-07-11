@@ -43,18 +43,53 @@ function Get-YesNoResponse {
 	Return $Response
 }
 
+function Confirm-LongOrShortCommit {
+	function ReadCommitMessage {
+		Write-Output "Please enter a commit message:"
+		$CommitMessage = (Get-Host).UI.ReadLine()
+		git commit -m "$CommitMessage"
+	}
+
+	If( ($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"YesToAll") -and
+		($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"NoToAll") )
+	{
+		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse `
+			-Title "Commit message"`
+			-Message "Would you like to use a long commit (``git commit``)? Answer no to enter a short message for ``git commit -m ...``"`
+			-YesText "Runs ``git commit`` for a long commit message."`
+			-YesToAllText "Selects 'Yes' for all remaining repositories."`
+			-NoText "Asks for a short string to be used in a ``git commit -m ...``"`
+			-NoToAllText "Selects 'No' for all remaining repositories."
+	}
+
+	Switch($global:UpdateGitReposPreferences.CustomPathSpec)
+	{
+		"Undefined" { Write-Error "Uh oh! Something went wrong!" }
+		"Yes" { git commit --verbose }
+		"YesToAll" { git commit --verbose }
+		"No"
+		{
+			ReadCommitMessage
+		}
+		"NoToAll"
+		{
+			ReadCommitMessage
+		}
+	}
+}
+
 function Confirm-CustomPathSpec {
-	[CmdletBinding()]
-	Param(
-		$Paths
-	)
+	function EnterPathspec {
+		Write-Output "Please enter a pathspec:"
+		$Pathspec = (Get-Host).UI.ReadLine()
+	}
 
 	$Pathspec = "."
 
 	If( ($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"YesToAll") -and
 		($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"NoToAll") )
 	{
-		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse`
+		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse `
 			-Title "Pathspec"`
 			-Message "Would you like to use a custom pathspec? The default pathspec is ``.``"`
 			-YesText "Uses a custom pathspec before commiting."`
@@ -68,17 +103,17 @@ function Confirm-CustomPathSpec {
 		"Undefined" { Write-Error "Uh oh! Something went wrong!" }
 		"Yes"
 		{
-			Write-Output "Please enter a pathspec:"
-			$Pathspec = (Get-Host).UI.ReadLine()
+			EnterPathspec
 		}
 		"YesToAll"
 		{
-			Write-Output "Please enter a pathspec:"
-			$Pathspec = (Get-Host).UI.ReadLine()
+			EnterPathspec
 		}
 	}
 
 	git add $Pathspec
+
+	Confirm-LongOrShortCommit
 }
 
 function Confirm-CommitChoice {
@@ -90,7 +125,7 @@ function Confirm-CommitChoice {
 	If( ($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"YesToAll") -and
 		($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"NoToAll") )
 	{
-		$global:UpdateGitReposPreferences.CommitChoice = Get-YesNoResponse`
+		$global:UpdateGitReposPreferences.CommitChoice = Get-YesNoResponse `
 			-Title "Unsaved Work"`
 			-Message "There's work to be commited in $(Resolve-Path $Path). Would you like to commit it?"`
 			-YesText "Prompts for files to add and a message to commit changes before pushing."`
@@ -157,19 +192,9 @@ function Update-GitRepos {
 				Push-Location -StackName ReposWithUnsavedWork
 				If($Interactive -eq $True)
 				{
-					#If(($CommitChoice -ne [Confirmation]"YesToAll") && ($CommitChoice -ne [Confirmation]"NoToAll"))
-					#{
-						#Switch($CommitChoice)
-						#{
-							#"Yes"
-							#{
-
-							#}
-						#}
-					#}
+					Confirm-CommitChoice $Repo
 				}
 			}
-
 
 			git status --short
 			git pull

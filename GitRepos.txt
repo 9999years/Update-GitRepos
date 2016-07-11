@@ -3,14 +3,14 @@
 #keep this in utf-8
 #lines starting with a # are ignored
 ~\Documents\Powershell Modules\update-gitrepos
-~\Documents\Powershell Modules\posh-git
-~\Documents\Powershell Modules\size
-~\Documents\Powershell Modules\var-dump
-~\Documents\Powershell Modules\var-dump
-~\Documents\WindowsPowerShell
-~\Documents\Vim
-~
-~\Documents\ahk
-~\Documents\LaTeX
-~\Documents\c\i-c-the-light
-~\Documents\c\random-indent
+#~\Documents\Powershell Modules\posh-git
+#~\Documents\Powershell Modules\size
+#~\Documents\Powershell Modules\var-dump
+#~\Documents\Powershell Modules\var-dump
+#~\Documents\WindowsPowerShell
+#~\Documents\Vim
+#~
+#~\Documents\ahk
+#~\Documents\LaTeX
+#~\Documents\c\i-c-the-light
+#~\Documents\c\random-indent
