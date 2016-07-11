@@ -2,11 +2,13 @@
 
 `Update-GitRepos` is a PowerShell module that makes keeping all of your git repos up to date easy.
 
-As of the writing of this page, `Update-GitRepos` is **not** a PowerShell module that **works**. Use it at your own risk!
+New feature: As far as I know, this script now does what it says it does!
 
 In its simplest form, it iterates through the paths you provide in `GitRepos.txt` and runs `git status --short`, `git pull`, and `git push` on each.
 
 Additionally, an `-Interactive` flag lets you make simple commits.
+
+Finding output too slow? Call `Update-GitRepos` with `-Local` to skip the `git pull` and `git push`, just for making commits (with `-Interactive`) or observing which directories need to be worked with.
 
 Program flow in interactive mode:
 
