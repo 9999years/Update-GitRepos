@@ -1,0 +1,15 @@
+digraph programflow {
+	"Commit?" -> "Add files: Custom pathspec?" [label="Yes"]
+	"Commit?" -> "Quit" [label="No"]
+
+	"Add files: Custom pathspec?" -> "Input pathspec" [label="Yes"]
+	"Add files: Custom pathspec?" -> "Use `.`" [label="No"]
+
+	"Use `.`" -> "`git add $Path`"
+	"Input pathspec" -> "`git add $Path`"
+
+	"`git add $Path`" -> "Long or short commit message?" -> "`git commit`" [label="Long"]
+	"Long or short commit message?" -> "Input commit message" [label="Short"]
+
+	"Input commit message" -> "`git commit -m $Message`" -> "Done"
+}

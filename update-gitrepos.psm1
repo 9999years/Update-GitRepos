@@ -11,16 +11,11 @@ Enum Confirmation
 $GitRepos = Get-Content .\GitRepos.txt -Encoding UTF8
 
 #some globals for preferences
-$UpdateGitReposPreferences = @{
+$global:UpdateGitReposPreferences = @{
 	CommitChoice = [Confirmation]"Undefined"
-	CommitChoice = [Confirmation]"Undefined"
+	CustomPathSpec = [Confirmation]"Undefined"
+	LongOrShortCommit = [Confirmation]"Undefined"
 }
-
-#ask for commit
-#ask to add . ?
-#if no, ask for spec to add
-#if yes, add
-#
 
 function Get-YesNoResponse {
 	#[Y] Yes [A] Yes to all  [N] No  [L] No to all [S] Suspend [?] Help
@@ -46,50 +41,89 @@ function Get-YesNoResponse {
 		0
 	)
 	Return $Response
-
-	#Switch($Response)
-	#{
-		#"Undefined"
-		#{
-			#Write-Output "Something almost definitely went wrong. I got undefined!"
-		#}
-		#"Yes"
-		#{
-			#Write-Output "Yes!"
-		#}
-		#"YesToAll"
-		#{
-			#Write-Output "Yes to all!"
-		#}
-		#"No"
-		#{
-			#Write-Output "Nope!"
-		#}
-		#"NoToAll"
-		#{
-			#Write-Output "No to all!"
-		#}
-	#}
 }
 
-function Edit-GitRepo {
+function Confirm-CustomPathSpec {
 	[CmdletBinding()]
 	Param(
-		[Parameter(
-			ValueFromPipeline = $True
-			)]
 		$Paths
 	)
+
+	$Pathspec = "."
+
+	If( ($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"YesToAll") -and
+		($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"NoToAll") )
+	{
+		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse`
+			-Title "Pathspec"`
+			-Message "Would you like to use a custom pathspec? The default pathspec is ``.``"`
+			-YesText "Uses a custom pathspec before commiting."`
+			-YesToAllText "Selects 'Yes' for all remaining repositories."`
+			-NoText "Uses ``.`` as the pathspec on all remaining repositories."`
+			-NoToAllText "Selects 'No' for all remaining repositories."
+	}
+
+	Switch($global:UpdateGitReposPreferences.CustomPathSpec)
+	{
+		"Undefined" { Write-Error "Uh oh! Something went wrong!" }
+		"Yes"
+		{
+			Write-Output "Please enter a pathspec:"
+			$Pathspec = (Get-Host).UI.ReadLine()
+		}
+		"YesToAll"
+		{
+			Write-Output "Please enter a pathspec:"
+			$Pathspec = (Get-Host).UI.ReadLine()
+		}
+	}
+
+	git add $Pathspec
+}
+
+function Confirm-CommitChoice {
+	[CmdletBinding()]
+	Param(
+		$Path
+	)
+
+	If( ($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"YesToAll") -and
+		($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"NoToAll") )
+	{
+		$global:UpdateGitReposPreferences.CommitChoice = Get-YesNoResponse`
+			-Title "Unsaved Work"`
+			-Message "There's work to be commited in $(Resolve-Path $Path). Would you like to commit it?"`
+			-YesText "Prompts for files to add and a message to commit changes before pushing."`
+			-YesToAllText "Selects 'Yes' for all remaining repositories."`
+			-NoText "Continues on to push and pull existing commits."`
+			-NoToAllText "Selects 'No' for all remaining repositories."
+	}
+
+	Switch($global:UpdateGitReposPreferences.CommitChoice)
+	{
+		"Undefined" { Write-Error "Uh oh! Something went wrong!" }
+		"Yes" { Confirm-CustomPathSpec }
+		"YesToAll" { Confirm-CustomPathSpec }
+	}
 }
 
 function Update-GitRepos {
 	[CmdletBinding()]
 	Param(
-		[Switch]$Interactive
+		[Switch]$Interactive,
+		[Switch]$ResetPreferences
 	)
 
 	#Try block allows catching a C-c to change back to the orig directory
 	Try {
+		If($ResetPreferences)
+		{
+			$global:UpdateGitReposPreferences = @{
+				CommitChoice = [Confirmation]"Undefined"
+				CustomPathSpec = [Confirmation]"Undefined"
+				LongOrShortCommit = [Confirmation]"Undefined"
+			}
+		}
 		#Remember the current location so we can go back to it
 		#When we're done with processing
 		Push-Location
