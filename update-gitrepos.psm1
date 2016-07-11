@@ -46,7 +46,12 @@ function Get-YesNoResponse {
 function Confirm-LongOrShortCommit {
 	function ReadCommitMessage {
 		Write-Output "Please enter a commit message:"
+		Write-Output "If you got here accidentally and don't want to make a commit, just enter <<EXIT>> to skip this repository."
 		$CommitMessage = (Get-Host).UI.ReadLine()
+		If($CommitMessage -eq "<<EXIT>>")
+		{
+			Break
+		}
 		git commit -m "$CommitMessage"
 	}
 
