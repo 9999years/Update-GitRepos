@@ -1,25 +1,38 @@
 digraph programflow {
-	commit -> custom_pathspec [label="Yes"];
-	custom_pathspec -> { use_dot [label="No"]; input_pathspec [label="Yes"]; };
+	commit -> commit_no -> done
 
-	commit -> quit [label="No"];
+	commit -> commit_yes ->
+	{
+		custom_pathspec -> { pathspec_yes; pathspec_no }
+	}
 
-	{ use_dot; input_pathspec; } -> git_add;
+	pathspec_yes -> input_pathspec -> git_add
+	pathspec_no -> use_dot -> git_add
 
-	git_add -> commit_length -> git_commit [label="Long"] -> done;
-	commit_length -> input_message [label="Short"] -> message_exit
-	message_exit -> { git_commit_m [label="No"] -> done; quit [label="Yes"]}
+	git_add -> commit_length -> { length_long; length_short }
+	length_long -> git_commit
+	length_short -> input_message -> message_exit -> { message_no; message_yes }
+	message_yes -> message_done
+	message_no -> git_commit_m
 
-	quit [label="Quit"];
-	done [label="Done"];
-	commit [label="Commit?"];
-	custom_pathspec [label="Add files: Custom pathspec?"];
-	use_dot [label="Use `.`"];
-	input_pathspec [label="Input pathspec"];
-	git_add [label="`git add $Path`"];
-	git_commit [label="`git commit`"];
-	git_commit_m [label="`git commit -m $Message`"];
+	commit_done [label="Done"]
+	pathspec_yes [label="Yes"]
+	pathspec_no [label="No"]
+	commit [label="Commit?"]
+	commit_no [label="No"]
+	commit_yes [label="Yes"]
+	custom_pathspec [label="Add files: Custom pathspec?"]
+	use_dot [label="Use `.`"]
+	input_pathspec [label="Input pathspec"]
+	git_add [label="`git add $Path`"]
+	git_commit [label="`git commit`"]
+	git_commit_m [label="`git commit -m $Message`"]
 	commit_length [label="Long or short commit message?"]
+	length_long [label="Long"]
+	length_short [label="Short"]
 	input_message [label="Input commit message"]
 	message_exit [label="Message == \"<<EXIT>>\"?"]
+	message_no [label="No"]
+	message_yes [label="Yes"]
+	message_done [label="Done"]
 }
