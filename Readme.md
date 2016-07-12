@@ -24,54 +24,78 @@ $global:UpdateGitReposPreferences = @{
 
 Other possible values for these keys are "Yes", "No", and "Undefined", although changing the keys to any of those won't alter the behavior of the program.
 
-Program flow in interactive mode (slightly out of date but still close enough to be useful):
+A graph of the program flow in interactive mode follows. After finishing, the program will move onto the next repository and repeat the process, meaning that here “done” and “quit” indicate being finished with the current repository, and not the program as a whole.
 
 ```
-+--------------+  No     +-------------------------------+
-|     Quit     | <------ |            Commit?            |
-+--------------+         +-------------------------------+
-                           |
-                           | Yes
-                           v
-+--------------+  No     +-------------------------------+
-|   Use `.`    | <------ |  Add files: Custom pathspec?  |
-+--------------+         +-------------------------------+
-  |                        |
-  |                        | Yes
-  |                        v
-  |                      +-------------------------------+
-  |                      |        Input pathspec         |
-  |                      +-------------------------------+
-  |                        |
-  |                        |
-  |                        v
-  |                      +-------------------------------+
-  +--------------------> |        `git add $Path`        |
-                         +-------------------------------+
-                           |
-                           |
-                           v
-+--------------+  Long   +-------------------------------+
-| `git commit` | <------ | Long or short commit message? |
-+--------------+         +-------------------------------+
-                           |
-                           | Short
-                           v
-                         +-------------------------------+
-                         |     Input commit message      |
-                         +-------------------------------+
-                           |
-                           |
-                           v
-                         +-------------------------------+
-                         |   `git commit -m $Message`    |
-                         +-------------------------------+
-                           |
-                           |
-                           v
-                         +-------------------------------+
-                         |             Done              |
-                         +-------------------------------+
++----------------+     +-------------------------------+
+|       No       | <-- |            Commit?            |
++----------------+     +-------------------------------+
+  |                      |
+  |                      |
+  v                      v
++----------------+     +-------------------------------+
+|      Done      |     |              Yes              |
++----------------+     +-------------------------------+
+                         |
+                         |
+                         v
++----------------+     +-------------------------------+
+|      Yes       | <-- |  Add files: Custom pathspec?  |
++----------------+     +-------------------------------+
+  |                      |
+  |                      |
+  v                      v
++----------------+     +-------------------------------+
+| Input pathspec |     |              No               |
++----------------+     +-------------------------------+
+  |                      |
+  |                      |
+  |                      v
+  |                    +-------------------------------+
+  |                    |            Use `.`            |
+  |                    +-------------------------------+
+  |                      |
+  |                      |
+  |                      v
+  |                    +-------------------------------+
+  +------------------> |        `git add $Path`        |
+                       +-------------------------------+
+                         |
+                         |
+                         v
++----------------+     +-------------------------------+
+|      Long      | <-- | Long or short commit message? |
++----------------+     +-------------------------------+
+  |                      |
+  |                      |
+  v                      v
++----------------+     +-------------------------------+
+|  `git commit`  |     |             Short             |
++----------------+     +-------------------------------+
+                         |
+                         |
+                         v
+                       +-------------------------------+
+                       |     Input commit message      |
+                       +-------------------------------+
+                         |
+                         |
+                         v
++----------------+     +-------------------------------+
+|      Yes       | <-- |    Message == "<<EXIT>>"?     |
++----------------+     +-------------------------------+
+  |                      |
+  |                      |
+  v                      v
++----------------+     +-------------------------------+
+|      Done      |     |              No               |
++----------------+     +-------------------------------+
+                         |
+                         |
+                         v
+                       +-------------------------------+
+                       |   `git commit -m $Message`    |
+                       +-------------------------------+
 ```
 
 (You can render this graph with `make`, provided you have [Graph-Easy](http://search.cpan.org/~tels/Graph-Easy/lib/Graph/Easy.pm) installed.)
@@ -118,7 +142,7 @@ To https://github.com/9999years/Update-GitRepos.git
 ##Features that might be coming soon:
 
 * The ability to “drop out” into another PowerShell instance to run arbitrary commands in any repository when it’s being processed.
-* Refinement.
+* A dry run mode.
 
 ##Pull request policy
 

@@ -1,19 +1,18 @@
 digraph programflow {
-	commit -> commit_no -> done
+	/*
+	I've tried to make this as readable as possible, but have probably failed.
+	The "main" vertical column is represented as the first line of content, with other off-shoots on later lines.
+	*/
+	
+	commit -> commit_yes -> custom_pathspec -> pathspec_no -> use_dot -> git_add -> commit_length -> length_short -> input_message -> message_exit -> message_no -> git_commit_m
 
-	commit -> commit_yes ->
-	{
-		custom_pathspec -> { pathspec_yes; pathspec_no }
-	}
+	commit -> commit_no -> commit_done
 
-	pathspec_yes -> input_pathspec -> git_add
-	pathspec_no -> use_dot -> git_add
+	custom_pathspec -> pathspec_yes -> input_pathspec -> git_add
 
-	git_add -> commit_length -> { length_long; length_short }
-	length_long -> git_commit
-	length_short -> input_message -> message_exit -> { message_no; message_yes }
-	message_yes -> message_done
-	message_no -> git_commit_m
+	commit_length -> length_long -> git_commit
+
+	message_exit -> message_yes -> message_done
 
 	commit_done [label="Done"]
 	pathspec_yes [label="Yes"]
