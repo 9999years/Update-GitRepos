@@ -95,7 +95,7 @@ function Confirm-CustomPathSpec {
 	{
 		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse `
 			-Title "Pathspec"`
-			-Message "Would you like to use a custom pathspec? The default pathspec is ``.``"`
+			-Message "Would you like to use a custom pathspec? Answer no to use the default pathspec, ``.``"`
 			-YesText "Uses a custom pathspec before commiting."`
 			-YesToAllText "Selects 'Yes' for all remaining repositories."`
 			-NoText "Uses ``.`` as the pathspec on all remaining repositories."`
@@ -221,15 +221,83 @@ function Confirm-CommitChoice {
 	Porcelain.
 
 .EXAMPLE
-	PS> 1,1000,100000 | Measure-Unit
-	Name                           Value
-	----                           -----
-	Text
-	Unit                           1
-	Text
-	Unit                           1
-	Text                           kb
-	Unit                           1024
+	PS> Update-GitRepos -Interactive -Local
+	==== PROCESSING 0: ~\Documents\Powershell Modules\update-gitrepos ====
+	M flow.dot
+	M flow.txt
+	M update-gitrepos.psm1
+	git diff:
+	C:/Users/wxyz/AppData/Local/Temp/9UOpQa_flow.dot is not a Word Document.
+	flow.dot is not a Word Document.
+	diff --git a/flow.txt b/flow.txt
+	index 9d12840..9dd8c1d 100644
+	--- a/flow.txt
+	+++ b/flow.txt
+	@@ -1,45 +1,57 @@
+	-+--------------+  No     +-------------------------------+
+	-|     Quit     | <------ |            Commit?            |
+	-+--------------+         +-------------------------------+
+	-                           |
+	-                           | Yes
+	-                           v
+	-+--------------+  No     +-------------------------------+
+	-|   Use `.`    | <------ |  Add files: Custom pathspec?  |
+	-+--------------+         +-------------------------------+
+	-  |                        |
+	-  |                        | Yes
+	-  |                        v
+	-  |                      +-------------------------------+
+	-  |                      |        Input pathspec         |
+	-  |                      +-------------------------------+
+	-  |                        |
+	-  |                        |
+	-  |                        v
+	-  |                      +-------------------------------+
+	-  +--------------------> |        `git add $Path`        |
+	-                         +-------------------------------+
+	-                           |
+	-                           |
+	-                           v
+	-+--------------+  Long   +-------------------------------+
+	-| `git commit` | <------ | Long or short commit message? |
+	-+--------------+         +-------------------------------+
+	-                           |
+	-                           | Short
+	-                           v
+	-                         +-------------------------------+
+	-                         |     Input commit message      |
+	-                         +-------------------------------+
+	-                           |
+	-                           |
+	-                           v
+	-                         +-------------------------------+
+	git diff --staged:
+
+	Unsaved Work
+	There's work to be commited in C:\Users\wxyz\Documents\Powershell
+	Modules\update-gitrepos. Would you like to commit it?
+	[Y] Yes  [A] Yes to all  [N] No  [L] No to all  [?] Help (default is "Y"): a
+
+	Pathspec
+	Would you like to use a custom pathspec? The default pathspec is `.`
+	[Y] Yes  [A] Yes to all  [N] No  [L] No to all  [?] Help (default is "Y"): n
+
+	Commit message
+	Would you like to use a long commit (`git commit`)? Answer no to enter a short
+	message for `git commit -m ...`
+	[Y] Yes  [A] Yes to all  [N] No  [L] No to all  [?] Help (default is "Y"): w
+	[Y] Yes  [A] Yes to all  [N] No  [L] No to all  [?] Help (default is "Y"): ?
+	Y - Runs `git commit` for a long commit message.
+	A - Selects 'Yes' for all remaining repositories.
+	N - Asks for a short string to be used in a `git commit -m ...`
+	L - Selects 'No' for all remaining repositories.
+	[Y] Yes  [A] Yes to all  [N] No  [L] No to all  [?] Help (default is "Y"): y
+	C:/Users/wxyz/AppData/Local/Temp/56OSic_flow.dot is not a Word Document.
+	flow.dot is not a Word Document.
+	[master 017db06] Fixed Get-YesNoResponse to work w/o enum, docs.
+	3 files changed, 170 insertions(+), 60 deletions(-)
+	rewrite flow.dot (94%)
+	rewrite flow.txt (100%)
 #>
 function Update-GitRepos {
 	[CmdletBinding()]
