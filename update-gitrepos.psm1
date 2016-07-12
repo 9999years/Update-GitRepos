@@ -1,20 +1,11 @@
-Enum Confirmation
-{
-	Undefined = -1
-	Yes
-	YesToAll
-	No
-	NoToAll
-}
-
 #list of git repos
-$GitRepos = Get-Content .\GitRepos.txt -Encoding UTF8
+$global:GitRepos = Get-Content GitRepos.txt -Encoding UTF8
 
 #some globals for preferences
 $global:UpdateGitReposPreferences = @{
-	CommitChoice = [Confirmation]"Undefined"
-	CustomPathSpec = [Confirmation]"Undefined"
-	LongOrShortCommit = [Confirmation]"Undefined"
+	CommitChoice = "Undefined"
+	CustomPathSpec = "Undefined"
+	LongCommit = "Undefined"
 }
 
 function Get-YesNoResponse {
@@ -29,7 +20,7 @@ function Get-YesNoResponse {
 		[String]$NoToAllText = "Selects 'no' for this prompt and for all future instances of this prompt"
 	)
 
-	[Confirmation]$Response = (Get-Host).UI.PromptForChoice(
+	$Response = (Get-Host).UI.PromptForChoice(
 `		$Title,
 		$Message,
 		[System.Management.Automation.Host.ChoiceDescription[]](
@@ -43,7 +34,7 @@ function Get-YesNoResponse {
 	Return $Response
 }
 
-function Confirm-LongOrShortCommit {
+function Confirm-LongCommit {
 	function ReadCommitMessage {
 		Write-Output "Please enter a commit message:"
 		Write-Output "If you got here accidentally and don't want to make a commit, just enter <<EXIT>> to skip this repository."
@@ -55,10 +46,10 @@ function Confirm-LongOrShortCommit {
 		git commit -m "$CommitMessage"
 	}
 
-	If( ($global:UpdateGitReposPreferences.LongOrShortCommit -ne [Confirmation]"YesToAll") -and
-		($global:UpdateGitReposPreferences.LongOrShortCommit -ne [Confirmation]"NoToAll") )
+	If( ($global:UpdateGitReposPreferences.LongCommit -ne "YesToAll") -and
+		($global:UpdateGitReposPreferences.LongCommit -ne "NoToAll") )
 	{
-		$global:UpdateGitReposPreferences.LongOrShortCommit = Get-YesNoResponse `
+		$global:UpdateGitReposPreferences.LongCommit = Get-YesNoResponse `
 			-Title "Commit message"`
 			-Message "Would you like to use a long commit (``git commit``)? Answer no to enter a short message for ``git commit -m ...``"`
 			-YesText "Runs ``git commit`` for a long commit message."`
@@ -67,7 +58,7 @@ function Confirm-LongOrShortCommit {
 			-NoToAllText "Selects 'No' for all remaining repositories."
 	}
 
-	Switch($global:UpdateGitReposPreferences.LongOrShortCommit)
+	Switch($global:UpdateGitReposPreferences.LongCommit)
 	{
 		"Undefined" { Write-Error "Uh oh! Something went wrong!" }
 		"Yes" { git commit --verbose }
@@ -91,8 +82,8 @@ function Confirm-CustomPathSpec {
 
 	$Pathspec = "."
 
-	If( ($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"YesToAll") -and
-		($global:UpdateGitReposPreferences.CustomPathSpec -ne [Confirmation]"NoToAll") )
+	If( ($global:UpdateGitReposPreferences.CustomPathSpec -ne "YesToAll") -and
+		($global:UpdateGitReposPreferences.CustomPathSpec -ne "NoToAll") )
 	{
 		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse `
 			-Title "Pathspec"`
@@ -118,7 +109,7 @@ function Confirm-CustomPathSpec {
 
 	git add $Pathspec
 
-	Confirm-LongOrShortCommit
+	Confirm-LongCommit
 }
 
 function Confirm-CommitChoice {
@@ -133,8 +124,8 @@ function Confirm-CommitChoice {
 	Write-Output "git diff --staged:"
 	git diff --staged
 
-	If( ($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"YesToAll") -and
-		($global:UpdateGitReposPreferences.CommitChoice -ne [Confirmation]"NoToAll") )
+	If( ($global:UpdateGitReposPreferences.CommitChoice -ne "YesToAll") -and
+		($global:UpdateGitReposPreferences.CommitChoice -ne "NoToAll") )
 	{
 		$global:UpdateGitReposPreferences.CommitChoice = Get-YesNoResponse `
 			-Title "Unsaved Work"`
@@ -166,16 +157,16 @@ function Update-GitRepos {
 		If($ResetPreferences)
 		{
 			$global:UpdateGitReposPreferences = @{
-				CommitChoice = [Confirmation]"Undefined"
-				CustomPathSpec = [Confirmation]"Undefined"
-				LongOrShortCommit = [Confirmation]"Undefined"
+				CommitChoice = "Undefined"
+				CustomPathSpec = "Undefined"
+				LongCommit = "Undefined"
 			}
 		}
 		#Remember the current location so we can go back to it
 		#When we're done with processing
 		Push-Location
 		$i = 0
-		ForEach($Repo in $GitRepos)
+		ForEach($Repo in $global:GitRepos)
 		{
 			#Ignore commented lines
 			If($Repo.StartsWith("#"))

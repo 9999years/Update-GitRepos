@@ -12,7 +12,19 @@ Additionally, an `-Interactive` flag lets you make simple commits.
 
 Finding output too slow? Call `Update-GitRepos` with `-Local` to skip the `git pull` and `git push`, just for making commits (with `-Interactive`) or observing which directories need to be worked with.
 
-Program flow in interactive mode:
+You can also set default preferences for the interactive mode prompts by adding (something like) the following to your `$PROFILE`
+
+```
+$global:UpdateGitReposPreferences = @{
+	CommitChoice = "YesToAll"
+	CustomPathSpec = "NoToAll"
+	LongCommit = "NoToAll"
+}
+```
+
+Other possible values for these keys are "Yes", "No", and "Undefined", although changing the keys to any of those won't alter the behavior of the program.
+
+Program flow in interactive mode (slightly out of date but still close enough to be useful):
 
 ```
 +--------------+  No     +-------------------------------+
