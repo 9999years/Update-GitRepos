@@ -31,6 +31,14 @@ function Get-YesNoResponse {
 			),
 		0
 	)
+
+	Switch($Response)
+	{
+		0 { $Response = "Yes" }
+		1 { $Response = "YesToAll" }
+		2 { $Response = "No" }
+		3 { $Response = "NoToAll" }
+	}
 	Return $Response
 }
 
@@ -144,6 +152,85 @@ function Confirm-CommitChoice {
 	}
 }
 
+<#
+.SYNOPSIS
+	Updates (push/pull and optionally add/commit) a list of git repositories specified in GitRepos.txt
+
+.DESCRIPTION
+	Runs git pull and then git push in a list of repositories specified in GitRepos.txt
+	With -Interactive, also shows a diff, adds files, and makes commits in said repositories.
+	With -Local, Update-GitRepos skips the git pull and git push, showing only the status (and, with -Interactive, offering to make commits) to speed up output.
+
+.PARAMETER Interactive
+	Offers to make commits in repositories with changes to be commited, staged or unstaged.
+	Flow with -Interactive is as follows:
+
+	+--------------+  No     +-------------------------------+
+	|     Quit     | <------ |            Commit?            |
+	+--------------+         +-------------------------------+
+	                        |
+	                        | Yes
+	                        v
+	+--------------+  No     +-------------------------------+
+	|   Use `.`    | <------ |  Add files: Custom pathspec?  |
+	+--------------+         +-------------------------------+
+	|                        |
+	|                        | Yes
+	|                        v
+	|                      +-------------------------------+
+	|                      |        Input pathspec         |
+	|                      +-------------------------------+
+	|                        |
+	|                        |
+	|                        v
+	|                      +-------------------------------+
+	+--------------------> |        `git add $Path`        |
+	                        +-------------------------------+
+	                        |
+	                        |
+	                        v
+	+--------------+  Long   +-------------------------------+
+	| `git commit` | <------ | Long or short commit message? |
+	+--------------+         +-------------------------------+
+	                        |
+	                        | Short
+	                        v
+	                        +-------------------------------+
+	                        |     Input commit message      |
+	                        +-------------------------------+
+	                        |
+	                        |
+	                        v
+	                        +-------------------------------+
+	                        |   `git commit -m $Message`    |
+	                        +-------------------------------+
+	                        |
+	                        |
+	                        v
+	                        +-------------------------------+
+	                        |             Done              |
+	                        +-------------------------------+
+
+.PARAMETER Local
+	Skips the git pull and git push, massively speeding up output or in case of lack of internet.
+
+.PARAMETER ResetPreferences
+	Clears the keys in $global:UpdateGitReposPreferences and then terminates, in case of unwanted selections.
+
+.FUNCTIONALITY
+	Porcelain.
+
+.EXAMPLE
+	PS> 1,1000,100000 | Measure-Unit
+	Name                           Value
+	----                           -----
+	Text
+	Unit                           1
+	Text
+	Unit                           1
+	Text                           kb
+	Unit                           1024
+#>
 function Update-GitRepos {
 	[CmdletBinding()]
 	Param(
@@ -161,6 +248,7 @@ function Update-GitRepos {
 				CustomPathSpec = "Undefined"
 				LongCommit = "Undefined"
 			}
+			Break
 		}
 		#Remember the current location so we can go back to it
 		#When we're done with processing
