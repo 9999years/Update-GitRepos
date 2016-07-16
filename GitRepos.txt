@@ -6,7 +6,6 @@
 ~\Documents\Powershell Modules\posh-git
 ~\Documents\Powershell Modules\size
 ~\Documents\Powershell Modules\var-dump
-~\Documents\Powershell Modules\var-dump
 ~\Documents\WindowsPowerShell
 ~\Documents\Vim
 ~
