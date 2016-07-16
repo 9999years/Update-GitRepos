@@ -1,5 +1,5 @@
 #list of git repos
-$global:GitRepos = Get-Content GitRepos.txt -Encoding UTF8
+$global:GitRepos = Get-Content $PSScriptRoot\GitRepos.txt -Encoding UTF8
 
 #some globals for preferences
 $global:UpdateGitReposPreferences = @{
@@ -83,18 +83,18 @@ function Confirm-LongCommit {
 }
 
 function Confirm-CustomPathSpec {
-	function EnterPathspec {
+	function EnterPathSpec {
 		Write-Output "Please enter a pathspec:"
-		$Pathspec = (Get-Host).UI.ReadLine()
+		$PathSpec = (Get-Host).UI.ReadLine()
 	}
 
-	$Pathspec = "."
+	$PathSpec = "."
 
 	If( ($global:UpdateGitReposPreferences.CustomPathSpec -ne "YesToAll") -and
 		($global:UpdateGitReposPreferences.CustomPathSpec -ne "NoToAll") )
 	{
 		$global:UpdateGitReposPreferences.CustomPathSpec = Get-YesNoResponse `
-			-Title "Pathspec"`
+			-Title "PathSpec"`
 			-Message "Would you like to use a custom pathspec? Answer no to use the default pathspec, ``.``"`
 			-YesText "Uses a custom pathspec before commiting."`
 			-YesToAllText "Selects 'Yes' for all remaining repositories."`
@@ -107,15 +107,15 @@ function Confirm-CustomPathSpec {
 		"Undefined" { Write-Error "Uh oh! Something went wrong!" }
 		"Yes"
 		{
-			EnterPathspec
+			EnterPathSpec
 		}
 		"YesToAll"
 		{
-			EnterPathspec
+			EnterPathSpec
 		}
 	}
 
-	git add $Pathspec
+	git add $PathSpec
 
 	Confirm-LongCommit
 }
@@ -163,82 +163,19 @@ function Confirm-CommitChoice {
 
 .PARAMETER Interactive
 	Offers to make commits in repositories with changes to be commited, staged or unstaged.
-	Flow with -Interactive is as follows:
-	+----------------+     +-------------------------------+
-	|       No       | <-- |            Commit?            |
-	+----------------+     +-------------------------------+
-	  |                      |
-	  |                      |
-	  v                      v
-	+----------------+     +-------------------------------+
-	|      Done      |     |              Yes              |
-	+----------------+     +-------------------------------+
-	                         |
-	                         |
-	                         v
-	+----------------+     +-------------------------------+
-	|      Yes       | <-- |  Add files: Custom pathspec?  |
-	+----------------+     +-------------------------------+
-	  |                      |
-	  |                      |
-	  v                      v
-	+----------------+     +-------------------------------+
-	| Input pathspec |     |              No               |
-	+----------------+     +-------------------------------+
-	  |                      |
-	  |                      |
-	  |                      v
-	  |                    +-------------------------------+
-	  |                    |            Use `.`            |
-	  |                    +-------------------------------+
-	  |                      |
-	  |                      |
-	  |                      v
-	  |                    +-------------------------------+
-	  +------------------> |        `git add $Path`        |
-	                       +-------------------------------+
-	                         |
-	                         |
-	                         v
-	+----------------+     +-------------------------------+
-	|      Long      | <-- | Long or short commit message? |
-	+----------------+     +-------------------------------+
-	  |                      |
-	  |                      |
-	  v                      v
-	+----------------+     +-------------------------------+
-	|  `git commit`  |     |             Short             |
-	+----------------+     +-------------------------------+
-	                         |
-	                         |
-	                         v
-	                       +-------------------------------+
-	                       |     Input commit message      |
-	                       +-------------------------------+
-	                         |
-	                         |
-	                         v
-	+----------------+     +-------------------------------+
-	|      Yes       | <-- |    Message == "<<EXIT>>"?     |
-	+----------------+     +-------------------------------+
-	  |                      |
-	  |                      |
-	  v                      v
-	+----------------+     +-------------------------------+
-	|      Done      |     |              No               |
-	+----------------+     +-------------------------------+
-	                         |
-	                         |
-	                         v
-	                       +-------------------------------+
-	                       |   `git commit -m $Message`    |
-	                       +-------------------------------+
+	Flow with -Interactive can be viewed in flow.txt in the module directory.
 
 .PARAMETER Local
 	Skips the git pull and git push, massively speeding up output or in case of lack of internet.
 
 .PARAMETER ResetPreferences
 	Clears the keys in $global:UpdateGitReposPreferences and then terminates, in case of unwanted selections.
+
+.LINK
+	https://github.com/9999years/update-gitrepos
+
+.NOTES
+	Additional help and instructions can be found in Readme.md, contained in the module directory.
 #>
 function Update-GitRepos {
 	[CmdletBinding()]
@@ -259,6 +196,12 @@ function Update-GitRepos {
 			}
 			Break
 		}
+
+		If($GitRepos -eq $Null)
+		{
+			Write-Output "No repos found in .\GitRepos.txt! Quitting"
+		}
+
 		#Remember the current location so we can go back to it
 		#When we're done with processing
 		Push-Location
