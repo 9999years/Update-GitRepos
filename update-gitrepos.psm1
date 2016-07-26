@@ -204,7 +204,7 @@ function Update-GitRepos {
 
 		#Remember the current location so we can go back to it
 		#When we're done with processing
-		Push-Location
+		Push-Location -StackName "UpdateGitRepos"
 		$i = 0
 		ForEach($Repo in $global:GitRepos)
 		{
@@ -233,7 +233,7 @@ function Update-GitRepos {
 			git status --short
 			If($Status -ne $Null)
 			{
-				Push-Location -StackName ReposWithUnsavedWork
+				Push-Location -StackName "UnsavedWork"
 				If($Interactive -eq $True)
 				{
 					Confirm-CommitChoice $Repo
@@ -250,7 +250,7 @@ function Update-GitRepos {
 	}
 
 	Finally {
-		Pop-Location
+		Pop-Location -StackName "UpdateGitRepos"
 	}
 }
 
