@@ -3,6 +3,8 @@ digraph programflow {
 	I've tried to make this as readable as possible, but have probably failed.
 	The "main" vertical column is represented as the first line of content, with other off-shoots on later lines.
 	*/
+
+	node [shape="box"]
 	
 	commit -> commit_yes -> custom_pathspec -> pathspec_no -> use_dot -> git_add -> commit_length -> length_short -> input_message -> message_exit -> message_no -> git_commit_m
 
