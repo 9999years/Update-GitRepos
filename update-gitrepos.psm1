@@ -253,5 +253,3 @@ function Update-GitRepos {
 		Pop-Location -StackName "UpdateGitRepos"
 	}
 }
-
-New-Alias up Update-GitRepos
