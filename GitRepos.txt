@@ -2,10 +2,10 @@
 #it's pretty self-explanatory
 #keep this in utf-8
 #lines starting with a # are ignored
-~\Documents\Powershell Modules\update-gitrepos
-~\Documents\Powershell Modules\posh-git
-~\Documents\Powershell Modules\size
-~\Documents\Powershell Modules\var-dump
+~\Documents\PowershellModules\update-gitrepos
+~\Documents\PowershellModules\posh-git
+~\Documents\PowershellModules\size
+~\Documents\PowershellModules\var-dump
 ~\Documents\WindowsPowerShell
 ~\Documents\Vim
 ~
