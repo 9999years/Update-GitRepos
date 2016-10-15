@@ -13,3 +13,5 @@
 ~\Documents\LaTeX
 ~\Documents\c\i-c-the-light
 ~\Documents\c\random-indent
+~\Documents\12th Grade
+~\Documents\Vim\vimfiles\pack\kiss-boilerplate\start\kiss-boilerplate
