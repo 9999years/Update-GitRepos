@@ -1,5 +1,5 @@
 #list of git repos
-$global:GitRepos = Get-Content $PSScriptRoot\GitRepos.txt -Encoding UTF8
+$global:GitRepos = Get-Content $PSScriptRoot\repos\GitRepos.txt -Encoding UTF8
 
 #some globals for preferences
 $global:UpdateGitReposPreferences = @{
