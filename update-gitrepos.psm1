@@ -126,12 +126,6 @@ function Confirm-CommitChoice {
 		$Path
 	)
 
-	Write-Output "git diff:"
-	git diff
-
-	Write-Output "git diff --staged:"
-	git diff --staged
-
 	If( ($global:UpdateGitReposPreferences.CommitChoice -ne "YesToAll") -and
 		($global:UpdateGitReposPreferences.CommitChoice -ne "NoToAll") )
 	{
