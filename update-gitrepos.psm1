@@ -200,46 +200,49 @@ function Update-GitRepos {
 		#When we're done with processing
 		Push-Location -StackName "UpdateGitRepos"
 		$i = 0
-		ForEach($Repo in $global:GitRepos)
+		ForEach($RepoLine in $global:GitRepos)
 		{
 			#Ignore commented lines
-			If($Repo.StartsWith("#"))
+			If($RepoLine.StartsWith("#"))
 			{
 				Continue
 			}
 
-			Write-Output "==== PROCESSING ${i}: $Repo ===="
-			Try
+			ForEach($Repo in (Resolve-Path $RepoLine))
 			{
-				Resolve-Path $Repo -ErrorAction Stop > $Null
-			}
-			Catch
-			{
-				Write-Output "${i}: $Repo doesn't exist yet. Making it now."
-				mkdir $Repo
-			}
-			Finally
-			{
-				Set-Location $Repo
-			}
-
-			$Status = git status --short
-			git status --short
-			If($Status -ne $Null)
-			{
-				Push-Location -StackName "UnsavedWork"
-				If($Interactive -eq $True)
+				Write-Output "==== PROCESSING ${i}: $Repo ===="
+				Try
 				{
-					Confirm-CommitChoice $Repo
+					Resolve-Path $Repo -ErrorAction Stop > $Null
 				}
-			}
+				Catch
+				{
+					Write-Output "${i}: $Repo doesn't exist yet. Making it now."
+					mkdir $Repo
+				}
+				Finally
+				{
+					Set-Location $Repo
+				}
 
-			If(!$Local)
-			{
-				git pull
-				git push
+				$Status = git status --short
+				git status --short
+				If($Status -ne $Null)
+				{
+					Push-Location -StackName "UnsavedWork"
+					If($Interactive -eq $True)
+					{
+						Confirm-CommitChoice $Repo
+					}
+				}
+
+				If(!$Local)
+				{
+					git pull
+					git push
+				}
+				$i++
 			}
-			$i++
 		}
 	}
 
