@@ -202,7 +202,7 @@ function Update-GitRepos {
 		#When we're done with processing
 		Push-Location -StackName "UpdateGitRepos"
 		$i = 0
-		ForEach($RepoLine in GitRepos)
+		ForEach($RepoLine in $GitRepos)
 		{
 			#Ignore commented lines
 			If($RepoLine.StartsWith("#"))
@@ -212,7 +212,7 @@ function Update-GitRepos {
 
 			ForEach($Repo in (Resolve-Path $RepoLine))
 			{
-				Write-Output "==== PROCESSING ${i}: $Repo ===="
+				Write-Output "#${i}: ===> $Repo"
 				Try
 				{
 					Resolve-Path $Repo -ErrorAction Stop > $Null
