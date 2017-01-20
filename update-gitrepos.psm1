@@ -1,5 +1,5 @@
 #list of git repos
-$global:GitRepos = Get-Content $PSScriptRoot\repos\GitRepos.txt -Encoding UTF8
+$global:GitReposPath = "$PSScriptRoot\repos\GitRepos.txt"
 
 #some globals for preferences
 $global:UpdateGitReposPreferences = @{
@@ -179,6 +179,8 @@ function Update-GitRepos {
 		[Switch]$Local
 	)
 
+	$GitRepos = Get-Content $global:GitReposPath -Encoding UTF8
+
 	#Try block allows catching a C-c to change back to the orig directory
 	Try {
 		If($ResetPreferences)
@@ -193,14 +195,14 @@ function Update-GitRepos {
 
 		If($GitRepos -eq $Null)
 		{
-			Write-Output "No repos found in .\GitRepos.txt! Quitting"
+			Write-Output "No repos found in ``$($global:GitReposPath)``! Quitting"
 		}
 
 		#Remember the current location so we can go back to it
 		#When we're done with processing
 		Push-Location -StackName "UpdateGitRepos"
 		$i = 0
-		ForEach($RepoLine in $global:GitRepos)
+		ForEach($RepoLine in GitRepos)
 		{
 			#Ignore commented lines
 			If($RepoLine.StartsWith("#"))
