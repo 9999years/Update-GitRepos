@@ -215,16 +215,13 @@ function Update-GitRepos {
 				Write-Output "#${i}: ===> $Repo"
 				Try
 				{
-					Resolve-Path $Repo -ErrorAction Stop > $Null
+					Get-ChildItem $Repo -Directory -ErrorAction Stop > $Null
+					Set-Location $Repo
 				}
 				Catch
 				{
-					Write-Output "${i}: $Repo doesn't exist yet. Making it now."
-					mkdir $Repo
-				}
-				Finally
-				{
-					Set-Location $Repo
+					Write-Output "${i}: $Repo doesn't exist yet, or is not a directory. Skipping!"
+					Continue
 				}
 
 				$Status = git status --short
