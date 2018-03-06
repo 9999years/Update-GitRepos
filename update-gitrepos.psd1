@@ -37,13 +37,13 @@ PowerShellVersion = '3.0'
 # DotNetFrameworkVersion = ''
 
 # Functions to export from this module
-FunctionsToExport = @(),
+FunctionsToExport = @()
 
 # Cmdlets to export from this module
-CmdletsToExport = @('Update-GitRepos'),
+CmdletsToExport = @('Update-GitRepos')
 
 # Variables to export from this module
-VariablesToExport = @(),
+VariablesToExport = @()
 
 # Aliases to export from this module
 AliasesToExport = @('up')
