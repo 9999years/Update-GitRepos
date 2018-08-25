@@ -250,4 +250,4 @@ function Update-GitRepos {
 	}
 }
 
-New-Alias up Update-GitRepos
+New-Alias up Update-GitRepos -ErrorAction SilentlyContinue
