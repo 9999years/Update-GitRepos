@@ -37,10 +37,10 @@ PowerShellVersion = '3.0'
 # DotNetFrameworkVersion = ''
 
 # Functions to export from this module
-FunctionsToExport = @()
+FunctionsToExport = @('Update-GitRepos')
 
 # Cmdlets to export from this module
-CmdletsToExport = @('Update-GitRepos')
+CmdletsToExport = @()
 
 # Variables to export from this module
 VariablesToExport = @()
@@ -50,15 +50,6 @@ AliasesToExport = @('up')
 
 # List of all files packaged with this module
 # FileList = @(".\GitRepos.txt",)
-
-
-#07/12/2016  11:03 AM               915 flow.dot
-#07/12/2016  11:03 AM             4,666 flow.txt
-#07/11/2016  12:53 AM               487 GitRepos.txt
-#07/09/2016  05:31 PM               160 Makefile
-#07/11/2016  01:25 AM             4,425 Readme.md
-#07/12/2016  11:10 AM             4,412 update-gitrepos.psd1
-#07/11/2016  01:22 AM             6,129 update-gitrepos.psm1
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
