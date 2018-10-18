@@ -37,7 +37,7 @@ PowerShellVersion = '3.0'
 # DotNetFrameworkVersion = ''
 
 # Functions to export from this module
-FunctionsToExport = @()
+FunctionsToExport = @('Update-GitRepos')
 
 # Cmdlets to export from this module
 CmdletsToExport = @('Update-GitRepos')
